@@ -9,7 +9,7 @@ Serving static content should be easy, all the kernel needs to do is call [sendf
 
 The theoretical fastest way to serve the response would be to keep the kernel and response (header + body) in L1 cache, then to serve the content using [send()](https://man7.org/linux/man-pages/man2/send.2.html) or [write()](https://man7.org/linux/man-pages/man2/write.2.html). To avoid multiple `send()` calls, the response should be in a contiguous block. Since the `Date` header changes every second, this should be generated every second and cached.
 
-The theoretical fastest way to process requests would be to use SIMD to parse the headers. See https://stackoverflow.com/questions/26586060/why-is-strcmp-not-simd-optimized. There might also be a performance improvement by having multiple threads handling requests. In this case, we might need some message passing / signal handling to share the pointer of the reponse across all the threads.
+The theoretical fastest way to process requests would be to use SIMD to parse the headers. See https://stackoverflow.com/questions/26586060/why-is-strcmp-not-simd-optimized. There might also be a performance improvement by having multiple threads handling requests. In this case, we might need some message passing / signal handling to share the pointer of the reponse across all the threads, though, the cost of that might outweigh any benifits so each thread might also want to generate their own reponses independently.
 
 Other optimizations that should be explored:
 - `Send()` `MSG_DONTWAIT` flag
